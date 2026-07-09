@@ -63,7 +63,7 @@ export default function MatchCard({ match, onReportScore, canManage }) {
             type="number" min="0" required value={s2} onChange={(e) => setS2(e.target.value)}
             style={{ width: 48, padding: '0.3rem' }}
           />
-          <button type="submit" className="primary" disabled={submitting} style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}>
+          <button type="submit" className="primary no-arrow" disabled={submitting} style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}>
             Save
           </button>
         </form>

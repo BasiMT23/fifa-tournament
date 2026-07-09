@@ -67,4 +67,19 @@ const getTopScorers = async (competitionCode) => {
   return { scorers: data.scorers, fromCache };
 };
 
-module.exports = { getMatches, getStandings, getTeamSquad, getTopScorers };
+/**
+ * All teams participating in a competition (e.g. 'WC' = FIFA World Cup).
+ * Used to auto-populate tournament participants instead of typing team
+ * names by hand — see tournamentController.importParticipants.
+ */
+const getCompetitionTeams = async (competitionCode) => {
+  const cacheKey = `fd:teams:${competitionCode}`;
+  const { data, fromCache } = await cachedRequest(
+    cacheKey,
+    () => client().get(`/competitions/${competitionCode}/teams`),
+    3600 // team lists change rarely — cache an hour
+  );
+  return { teams: data.teams, fromCache };
+};
+
+module.exports = { getMatches, getStandings, getTeamSquad, getTopScorers, getCompetitionTeams };

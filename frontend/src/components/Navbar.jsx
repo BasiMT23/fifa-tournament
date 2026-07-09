@@ -13,10 +13,10 @@ export default function Navbar() {
   };
 
   return (
-    <header style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
-      <nav className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <h1 style={{ fontSize: '1.4rem', letterSpacing: '0.03em' }}>MATCHDAY</h1>
+    <header style={{ borderBottom: '1px solid var(--border)', background: 'rgba(18, 22, 29, 0.85)', backdropFilter: 'blur(8px)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <nav className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 68 }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
+          <h1 style={{ fontSize: '1.5rem', letterSpacing: '0.03em' }}>MATCHDAY</h1>
           <span
             className="mono"
             title={connected ? 'Live updates connected' : 'Reconnecting…'}
@@ -24,23 +24,26 @@ export default function Navbar() {
               width: 8, height: 8, borderRadius: '50%',
               background: connected ? 'var(--accent)' : 'var(--danger)',
               display: 'inline-block',
+              boxShadow: connected ? '0 0 8px var(--accent)' : 'none',
             }}
           />
         </Link>
 
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '1.75rem', alignItems: 'center' }}>
           {user ? (
             <>
-              <Link to="/" className="muted">Tournaments</Link>
+              <Link to="/" className="muted" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Tournaments</Link>
               {(user.role === 'organizer' || user.role === 'admin') && (
-                <Link to="/tournaments/new" className="muted">New Tournament</Link>
+                <Link to="/tournaments/new"><button className="primary">New Tournament</button></Link>
               )}
-              <span className="mono muted" style={{ fontSize: '0.85rem' }}>{user.username}</span>
-              <button onClick={handleLogout}>Log out</button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <span className="avatar">{user.username?.[0]?.toUpperCase()}</span>
+                <button className="ghost" onClick={handleLogout}>Log out</button>
+              </div>
             </>
           ) : (
             <>
-              <Link to="/login" className="muted">Log in</Link>
+              <Link to="/login" className="muted" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Log in</Link>
               <Link to="/register"><button className="primary">Sign up</button></Link>
             </>
           )}

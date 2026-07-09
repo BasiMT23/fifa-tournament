@@ -17,6 +17,7 @@ const externalApiLimiter = rateLimit({
 
 router.use(protect, externalApiLimiter);
 
+router.get('/football-data/competitions/:code/teams', controller.getCompetitionTeams);
 router.get('/football-data/competitions/:code/matches', controller.getMatches);
 router.get('/football-data/competitions/:code/standings', controller.getStandings);
 router.get('/football-data/competitions/:code/scorers', controller.getTopScorers);

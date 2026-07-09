@@ -1,24 +1,27 @@
 /* ===== Design tokens =====
-   Direction: a tournament scoreboard, not a SaaS dashboard.
+   Direction: a team's war room, not a SaaS dashboard. Professional, hardcore,
+   motivating — the confidence of a pre-match team talk, not a corporate panel.
    - Anton (display): bold, condensed, all-caps — headlines, tournament names
    - IBM Plex Mono (data): scores, seeds, timers — anything numeric reads like a scoreboard readout
    - Inter (body): everything else, for actual readability
 */
 :root {
-  --bg: #0d1117;
-  --surface: #161b22;
-  --surface-raised: #1c2330;
-  --border: #2a3241;
-  --text: #e6edf3;
+  --bg: #0a0d12;
+  --surface: #12161d;
+  --surface-raised: #191f29;
+  --border: #262e3a;
+  --text: #eef2f6;
   --text-muted: #8b96a5;
-  --accent: #2dd4a7;       /* pitch green — wins, success, "live" bracket progress */
+  --accent: #2dd4a7;         /* pitch green — wins, success, "live" bracket progress */
   --accent-dim: #1a7a5e;
-  --warn: #f2b84b;         /* live match indicator */
-  --danger: #ef5a5a;       /* losses, destructive actions, errors */
+  --accent-electric: #3d7bfa; /* electric blue — secondary CTA / hero gradient */
+  --warn: #f2b84b;           /* live match indicator */
+  --danger: #ef5a5a;         /* losses, destructive actions, errors */
   --font-display: 'Anton', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
   --font-body: 'Inter', sans-serif;
-  --radius: 6px;
+  --radius: 8px;
+  --radius-pill: 999px;
 }
 
 * { box-sizing: border-box; }
@@ -31,6 +34,10 @@ body {
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(61, 123, 250, 0.08), transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(45, 212, 167, 0.06), transparent 40%);
+  background-attachment: fixed;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -49,15 +56,21 @@ button, input, select, textarea {
   font-size: 0.95rem;
 }
 
+/* Pill-shaped CTAs with a trailing arrow, echoing "Get Started →" */
 button {
   cursor: pointer;
   border: 1px solid var(--border);
   background: var(--surface-raised);
   color: var(--text);
-  border-radius: var(--radius);
-  padding: 0.6rem 1.1rem;
-  font-weight: 600;
-  transition: border-color 0.15s ease, transform 0.05s ease;
+  border-radius: var(--radius-pill);
+  padding: 0.65rem 1.3rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  transition: border-color 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 button:hover { border-color: var(--accent); }
 button:active { transform: scale(0.98); }
@@ -71,8 +84,20 @@ button.primary {
   background: var(--accent);
   border-color: var(--accent);
   color: #06251d;
+  box-shadow: 0 0 0 0 rgba(45, 212, 167, 0);
 }
-button.primary:hover { border-color: var(--accent); filter: brightness(1.08); }
+button.primary:hover {
+  border-color: var(--accent);
+  filter: brightness(1.08);
+  box-shadow: 0 4px 20px rgba(45, 212, 167, 0.25);
+}
+button.primary::after {
+  content: '→';
+  font-weight: 700;
+  transition: transform 0.15s ease;
+}
+button.primary:hover::after { transform: translateX(2px); }
+button.primary.no-arrow::after { content: none; }
 
 button.danger {
   background: transparent;
@@ -80,12 +105,19 @@ button.danger {
   color: var(--danger);
 }
 
+button.ghost {
+  background: transparent;
+  border-color: transparent;
+  padding: 0.5rem 0.2rem;
+}
+button.ghost:hover { border-color: transparent; text-decoration: underline; }
+
 input, select, textarea {
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: var(--radius);
-  padding: 0.55rem 0.75rem;
+  padding: 0.6rem 0.8rem;
 }
 
 .card {
@@ -93,6 +125,52 @@ input, select, textarea {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.25rem;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+/* Hero-style cards with a photographic gradient backdrop, like the
+   "Smart Grid" / "Fast Data Transfer" cards in the reference template —
+   used for featured tournaments and section banners. */
+.hero-card {
+  border-radius: var(--radius);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  color: #fff;
+}
+.hero-card.blue {
+  background:
+    linear-gradient(135deg, rgba(10,13,18,0.15), rgba(10,13,18,0.75)),
+    linear-gradient(135deg, #1d3b8f 0%, #3d7bfa 45%, #6fa8ff 100%);
+}
+.hero-card.green {
+  background:
+    linear-gradient(135deg, rgba(10,13,18,0.15), rgba(10,13,18,0.8)),
+    linear-gradient(135deg, #0d3d2e 0%, #1a7a5e 45%, #2dd4a7 100%);
+}
+.hero-card.dark {
+  background:
+    linear-gradient(135deg, rgba(10,13,18,0.3), rgba(10,13,18,0.9)),
+    linear-gradient(135deg, #2a2a2a 0%, #ef5a5a 120%);
+}
+.hero-card::before {
+  /* subtle diagonal texture so hero cards don't read as flat color fills */
+  content: '';
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 14px);
+  pointer-events: none;
+}
+
+/* Card grid, matching the reference template's 3-up feature grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.1rem;
+}
+.card-grid .card:hover, a:hover > .card {
+  border-color: var(--accent);
+  transform: translateY(-2px);
 }
 
 .container {
@@ -109,8 +187,8 @@ input, select, textarea {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   color: var(--text-muted);
 }
@@ -135,6 +213,18 @@ input, select, textarea {
   animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Avatar circle — small "belonging" touch: your initial, always visible, always yours */
+.avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-electric), var(--accent));
+  color: #06251d;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .badge.live, .spinner { animation: none; }

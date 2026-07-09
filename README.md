@@ -142,7 +142,10 @@ Plus: 1pt for any appearance, 2pt for 60+ minutes, 3pt per assist (all positions
 - `GET /api/external/football-data/competitions/:code/matches?status=&matchday=`
 - `GET /api/external/football-data/competitions/:code/standings`
 - `GET /api/external/football-data/competitions/:code/scorers`
+- `GET /api/external/football-data/competitions/:code/teams` — **used by "Import teams" below**
 - `GET /api/external/football-data/teams/:teamId`
+
+**Import real teams when creating a tournament:** the tournament creation wizard (frontend, step 2) has an "Import teams" button that pulls the real team list for a competition — including the **FIFA World Cup (`WC`)** — straight from football-data.org and pre-fills the participants box, instead of typing team names by hand. Requires `FOOTBALL_DATA_API_KEY` to be set in `backend/.env` (free key from https://www.football-data.org/client/register). Imported teams get an equal default skill rating of 50 since national-team "skill" isn't something this API provides — edit the numbers in the box before generating the bracket if you want specific seeding.
 
 Built against **football-data.org's v4 API** (verified against their current official docs — free tier: 10 requests/minute, 12 competitions, delayed scores, `X-Auth-Token` header auth). This is the concrete, working example; the pattern (`src/services/httpClient.js`) is provider-agnostic so any other REST API can plug in the same way.
 
@@ -175,10 +178,7 @@ Built against **football-data.org's v4 API** (verified against their current off
 
 ## Frontend (React + Vite)
 
-**Design direction:** a tournament scoreboard, not a generic dashboard — dark
-background, Anton (condensed display font) for headlines, IBM Plex Mono for
-scores/data, Inter for body text. Pitch-green accent for wins/live-progress,
-amber for live matches, crimson for errors/losses.
+**Design direction:** a team's war room, not a generic dashboard — confident, bold headlines (Anton), IBM Plex Mono for scores/data, Inter for body text. Pill-shaped CTAs with a trailing arrow, hero-style gradient banners, and card grids, inspired by clean modern SaaS templates but pushed toward "professional, hardcore, motivating, sense of belonging" rather than corporate-neutral: dark background, pitch-green + electric-blue accents, a personal welcome banner, and an avatar that's always visibly *yours* in the nav.
 
 - **Auth:** access token held in memory only (not localStorage — safer against XSS); refresh token is an httpOnly cookie the browser sends automatically. A silent `/auth/refresh` call on page load re-authenticates after a hard refresh without the user noticing.
 - **Bracket visualization** (`BracketView.jsx`): real SVG connector lines computed from each match's position — no external charting library. Round 2's vertical position is the midpoint of its two round-1 feeder matches, and so on, so the lines always converge correctly regardless of bracket size. When a `bracket:match_advanced` socket event fires, the connector into that match briefly pulses green.

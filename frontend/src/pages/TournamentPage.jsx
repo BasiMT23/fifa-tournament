@@ -62,27 +62,20 @@ export default function TournamentPage() {
 
   return (
     <div className="container" style={{ paddingTop: '2rem' }}>
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h2>{tournament.name}</h2>
+      <div style={{ marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '2rem' }}>{tournament.name}</h2>
         <span className="muted mono" style={{ fontSize: '0.85rem' }}>
-          {tournament.type.replace('_', ' ')} · {tournament.participants?.length || 0} participants · {tournament.status}
+          {tournament.type.replace('_', ' ').toUpperCase()} · {tournament.participants?.length || 0} PARTICIPANTS · {tournament.status.toUpperCase()}
         </span>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem' }}>
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            style={{
-              border: 'none',
-              borderRadius: 0,
-              background: 'transparent',
-              borderBottom: tab === t ? '2px solid var(--accent)' : '2px solid transparent',
-              color: tab === t ? 'var(--text)' : 'var(--text-muted)',
-              padding: '0.6rem 0.2rem',
-              marginRight: '1rem',
-            }}
+            className={tab === t ? 'primary no-arrow' : undefined}
+            style={tab === t ? {} : { background: 'transparent' }}
           >
             {t}
           </button>

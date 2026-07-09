@@ -27,4 +27,10 @@ const getTopScorers = asyncHandler(async (req, res) => {
   res.json({ success: true, ...result });
 });
 
-module.exports = { getMatches, getStandings, getTeamSquad, getTopScorers };
+// GET /api/external/football-data/competitions/:code/teams
+const getCompetitionTeams = asyncHandler(async (req, res) => {
+  const result = await footballDataService.getCompetitionTeams(req.params.code);
+  res.json({ success: true, ...result });
+});
+
+module.exports = { getMatches, getStandings, getTeamSquad, getTopScorers, getCompetitionTeams };

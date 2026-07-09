@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as tournamentService from '../services/tournamentService';
+import * as externalDataService from '../services/externalDataService';
+
+const IMPORT_OPTIONS = [
+  { code: 'WC', label: 'FIFA World Cup' },
+  { code: 'PL', label: 'Premier League' },
+  { code: 'CL', label: 'UEFA Champions League' },
+  { code: 'EC', label: 'European Championship' },
+];
 
 export default function NewTournamentPage() {
   const navigate = useNavigate();
@@ -10,6 +18,8 @@ export default function NewTournamentPage() {
   const [participantsText, setParticipantsText] = useState('');
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importFrom, setImportFrom] = useState('WC');
 
   const createTournament = async (e) => {
     e.preventDefault();
@@ -23,6 +33,26 @@ export default function NewTournamentPage() {
       setError(err.response?.data?.message || 'Failed to create tournament');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const importTeams = async () => {
+    setError(null);
+    setImporting(true);
+    try {
+      const teams = await externalDataService.getCompetitionTeams(importFrom);
+      // Real data has no ready-made "skill rating" for national teams, so
+      // teams come in as-is — edit the numbers below if you want specific seeding,
+      // otherwise everyone seeds equally and the bracket is randomly ordered.
+      const lines = teams.map((t) => `${t.name}, 50`).join('\n');
+      setParticipantsText(lines);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          'Could not import teams — check the backend has FOOTBALL_DATA_API_KEY configured'
+      );
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -87,25 +117,44 @@ export default function NewTournamentPage() {
       )}
 
       {step === 2 && (
-        <form onSubmit={addParticipantsAndGenerate} className="form-stack" style={{ maxWidth: 480 }}>
-          <label>
-            Participants (one per line — optionally <span className="mono">Name, skill rating</span>)
-            <textarea
-              rows={8}
-              required
-              placeholder={'Brazil, 95\nArgentina, 93\nFrance, 90\nEngland, 88'}
-              value={participantsText}
-              onChange={(e) => setParticipantsText(e.target.value)}
-            />
-          </label>
-          <p className="muted" style={{ fontSize: '0.85rem' }}>
-            Higher skill rating means a higher seed — top seeds are kept apart in early rounds.
-          </p>
-          {error && <span className="error-text">{error}</span>}
-          <button type="submit" className="primary" disabled={submitting}>
-            {submitting ? 'Generating bracket…' : 'Generate bracket'}
-          </button>
-        </form>
+        <div>
+          <div className="card" style={{ marginBottom: '1.25rem' }}>
+            <p className="muted" style={{ fontSize: '0.85rem', marginBottom: '0.6rem' }}>
+              Pull real teams from football-data.org instead of typing them by hand:
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <select value={importFrom} onChange={(e) => setImportFrom(e.target.value)} style={{ flex: 1 }}>
+                {IMPORT_OPTIONS.map((o) => (
+                  <option key={o.code} value={o.code}>{o.label}</option>
+                ))}
+              </select>
+              <button type="button" onClick={importTeams} disabled={importing}>
+                {importing ? 'Importing…' : 'Import teams'}
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={addParticipantsAndGenerate} className="form-stack" style={{ maxWidth: 480 }}>
+            <label>
+              Participants (one per line — optionally <span className="mono">Name, skill rating</span>)
+              <textarea
+                rows={8}
+                required
+                placeholder={'Brazil, 95\nArgentina, 93\nFrance, 90\nEngland, 88'}
+                value={participantsText}
+                onChange={(e) => setParticipantsText(e.target.value)}
+              />
+            </label>
+            <p className="muted" style={{ fontSize: '0.85rem' }}>
+              Higher skill rating means a higher seed — top seeds are kept apart in early rounds.
+              Imported teams default to an equal rating of 50; edit the numbers above if you want specific seeding.
+            </p>
+            {error && <span className="error-text">{error}</span>}
+            <button type="submit" className="primary" disabled={submitting}>
+              {submitting ? 'Generating bracket…' : 'Generate bracket'}
+            </button>
+          </form>
+        </div>
       )}
     </div>
   );

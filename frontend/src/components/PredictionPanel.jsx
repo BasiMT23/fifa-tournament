@@ -78,7 +78,7 @@ function PickButton({ label, selected, onClick, disabled }) {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={selected ? 'primary' : undefined}
+      className={selected ? 'primary no-arrow' : undefined}
       style={{ flex: 1 }}
     >
       {label}
