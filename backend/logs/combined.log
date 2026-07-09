@@ -1,0 +1,5 @@
+2026-07-08 04:14:34 [DEBUG]: Cache hit: test:key1
+2026-07-08 04:14:34 [WARN]: Rate limited on test:key2. Retry-After: 30
+2026-07-08 04:14:34 [WARN]: Rate limited on test:never-cached. Retry-After: undefined
+2026-07-08 04:14:34 [ERROR]: External API error on test:404case: 404 {"message":"not found"}
+2026-07-08 04:14:34 [ERROR]: External API unreachable for test:network-fail: ECONNREFUSED

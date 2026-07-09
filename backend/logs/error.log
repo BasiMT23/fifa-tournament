@@ -1,0 +1,2 @@
+2026-07-08 04:14:34 [ERROR]: External API error on test:404case: 404 {"message":"not found"}
+2026-07-08 04:14:34 [ERROR]: External API unreachable for test:network-fail: ECONNREFUSED
